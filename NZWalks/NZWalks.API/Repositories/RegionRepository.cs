@@ -26,7 +26,7 @@ namespace NZWalks.API.Repositories
         {
             var region = nZWalksDBContext.Regions.FirstOrDefault(x => x.Id == id);
 
-            if (region != null)
+            if (region != null) 
                 nZWalksDBContext.Regions.Remove(region);
             else
                 region = null;
@@ -61,8 +61,6 @@ namespace NZWalks.API.Repositories
             await nZWalksDBContext.SaveChangesAsync();
 
             return existingRegion;
-                
-            
         }
     }
 }
