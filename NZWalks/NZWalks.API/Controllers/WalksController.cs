@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NZWalks.API.Data;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repositories;
+using System.Data;
 
 namespace NZWalks.API.Controllers
 {
@@ -25,7 +27,8 @@ namespace NZWalks.API.Controllers
             this.walkDifficultyRepository = walkDifficultyRepository;
         }
 
-        [HttpGet]        
+        [HttpGet]
+        [Authorize(Roles = "reader")]
         public async Task<IActionResult> GetAllWalksAsync()
         {
             //Fetch data from DB - Domain..
@@ -41,6 +44,7 @@ namespace NZWalks.API.Controllers
         [HttpGet]
         [Route("{id:int}")]
         [ActionName("GetWalkAsync")]
+        [Authorize(Roles = "reader")]
         public async Task<IActionResult> GetWalkAsync(int id)
         {
             //Get the Domain object
@@ -58,6 +62,7 @@ namespace NZWalks.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "writer")]
         public async Task<IActionResult> AddWalksAsync([FromBody] Models.DTO.AddWalkRequest addWalkRequest)
         {
             var isValidREquest = await ValidateAddWalksAsync(addWalkRequest);
@@ -93,6 +98,7 @@ namespace NZWalks.API.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles = "writer")]
         public async Task<IActionResult> UpdateAsync([FromRoute]int id, [FromBody]UpdateWalkRequest updateWalkRequest)
         {
             var isValidWalkRequest = await ValidateUpdateWalksAsync(updateWalkRequest);
@@ -131,6 +137,7 @@ namespace NZWalks.API.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = "writer")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var walkDomain = await walkRepository.DeleteAsync(id);
@@ -165,11 +172,11 @@ namespace NZWalks.API.Controllers
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(addWalkRequest.Name))
+            /*if (!string.IsNullOrWhiteSpace(addWalkRequest.Name))
                 ModelState.AddModelError(nameof(addWalkRequest.Name), $"{nameof(addWalkRequest.Name)} is required.");
 
             if (addWalkRequest.Length <= 0)
-                ModelState.AddModelError(nameof(addWalkRequest.Length), $"{nameof(addWalkRequest.Length)} cannot be <= 0.");
+                ModelState.AddModelError(nameof(addWalkRequest.Length), $"{nameof(addWalkRequest.Length)} cannot be <= 0.");*/
 
             var region = await regionRepository.GetAsync(addWalkRequest.RegionId);
             if (region == null)
@@ -193,11 +200,11 @@ namespace NZWalks.API.Controllers
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(updateWalkRequest.Name))
+            /*if (!string.IsNullOrWhiteSpace(updateWalkRequest.Name))
                 ModelState.AddModelError(nameof(updateWalkRequest.Name), $"{nameof(updateWalkRequest.Name)} is required.");
 
             if (updateWalkRequest.Length <= 0)
-                ModelState.AddModelError(nameof(updateWalkRequest.Length), $"{nameof(updateWalkRequest.Length)} cannot be <= 0.");
+                ModelState.AddModelError(nameof(updateWalkRequest.Length), $"{nameof(updateWalkRequest.Length)} cannot be <= 0.");*/
 
             var region = await regionRepository.GetAsync(updateWalkRequest.RegionId);
             if (region == null)
